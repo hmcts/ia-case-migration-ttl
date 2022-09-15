@@ -1,0 +1,25 @@
+#!groovy
+properties([
+        [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/ia-case-migration'],
+        pipelineTriggers([[$class: 'GitHubPushTrigger']])
+])
+
+@Library("Infrastructure")
+
+import uk.gov.hmcts.contino.GradleBuilder
+
+def type = "java"
+def product = "ia"
+def component = "case-migration"
+
+def gradleBuilder = new GradleBuilder(this, product)
+
+def branchesToSync = ['demo']
+
+withPipeline(type, product, component) {
+    enableAksStagingDeployment()
+    disableLegacyDeployment()
+    nonServiceApp()
+    syncBranchesWithMaster(branchesToSync)
+}
+
