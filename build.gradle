@@ -70,6 +70,10 @@ checkstyle {
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
+checkstyleMain {
+  enabled = gradle.startParameter.taskNames.contains('checkstyleMain')
+}
+
 pmd {
   toolVersion = "6.5.0"
   sourceSets = [sourceSets.main, sourceSets.test]
