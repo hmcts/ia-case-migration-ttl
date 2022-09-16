@@ -7,18 +7,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.iacasemigration.migration.DataMigrationStep;
 import uk.gov.hmcts.reform.migration.service.DataMigrationService;
 import uk.gov.hmcts.reform.iacasemigration.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.sscs.ccd.service.SscsCcdConvertService;
-import uk.gov.hmcts.reform.sscs.migration.DataMigrationStep;
 
 @Slf4j
 @Service("dataMigrationService")
 @RequiredArgsConstructor
-public class IaDataMigrationService implements DataMigrationService<AsylumCase> {
+public class IaDataMigrationServiceImpl implements DataMigrationService<AsylumCase> {
 
     private static final String JURISDICTION = "IA";
-    private final SscsCcdConvertService sscsCcdConvertService;
+    private final IaCcdConvertService iaCcdConvertService;
     private final List<DataMigrationStep> dataMigrationSteps;
 
     @Override
@@ -30,14 +29,14 @@ public class IaDataMigrationService implements DataMigrationService<AsylumCase> 
     }
 
     @Override
-    public AsylumCase migrate(Map<String, Object> data, Long id) {
-        AsylumCase sscsCaseData = sscsCcdConvertService.getCaseData(data);
+    public AsylumCase migrate(Map<String, Object> data) {
+        AsylumCase asylumCase = iaCcdConvertService.getCaseData(data);
 
         if (dataMigrationSteps != null && !dataMigrationSteps.isEmpty()) {
             dataMigrationSteps
-                .forEach(s -> s.apply(sscsCaseData, id));
+                .forEach(s -> s.apply(asylumCase));
         }
 
-        return sscsCaseData;
+        return asylumCase;
     }
 }
