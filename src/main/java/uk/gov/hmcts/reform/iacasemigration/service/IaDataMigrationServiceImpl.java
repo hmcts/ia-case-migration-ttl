@@ -29,7 +29,7 @@ public class IaDataMigrationServiceImpl implements DataMigrationService<AsylumCa
     }
 
     @Override
-    public AsylumCase migrate(Map<String, Object> data) {
+    public AsylumCase migrate(Map<String, Object> data, Long id) {
         AsylumCase asylumCase = iaCcdConvertService.getCaseData(data);
 
         if (dataMigrationSteps != null && !dataMigrationSteps.isEmpty()) {
