@@ -34,7 +34,7 @@ public class IaDataMigrationServiceImpl implements DataMigrationService<AsylumCa
 
         if (dataMigrationSteps != null && !dataMigrationSteps.isEmpty()) {
             dataMigrationSteps
-                .forEach(s -> s.apply(asylumCase));
+                .forEach(s -> s.apply(asylumCase, id));
         }
 
         return asylumCase;

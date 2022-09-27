@@ -4,5 +4,5 @@ import uk.gov.hmcts.reform.iacasemigration.domain.entities.AsylumCase;
 
 public interface DataMigrationStep {
 
-    void apply(AsylumCase asylumCase);
+    void apply(AsylumCase asylumCase, Long id);
 }
