@@ -1,0 +1,39 @@
+java:
+  image: 'hmctspublic.azurecr.io/ia/case-migration:latest'
+  ingressHost: ia-case-migration-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+  aadIdentityName: ia
+  environment:
+    CORE_CASE_DATA_API_URL: "http://ccd-data-store-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    IDAM_API_URL: "https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net"
+    IDAM_OAUTH2_REDIRECT_URL: "https://evidence-sharing-preprod.sscs.reform.hmcts.net"
+    IDAM_S2S_AUTH: "http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    RD_LOCATION_REF_API_URL: "http://rd-location-ref-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+    MIGRATION_ACCESS_MANAGEMENT_ENABLED: "false"
+    MIGRATION_LOCATION_DATA_ENABLED: "false"
+    MIGRATION_CASE_ID: "1111111111111111"
+  keyVaults:
+    ia:
+      resourceGroup: ia
+      secrets:
+        - name: docmosis-enabled
+          alias: IA_DOCMOSIS_ENABLED
+        - name: em-stitching-enabled
+          alias: IA_EM_STITCHING_ENABLED
+        - name: system-username
+          alias: IA_SYSTEM_USERNAME
+        - name: system-password
+          alias: IA_SYSTEM_PASSWORD
+        - name: idam-client-id
+          alias: IA_IDAM_CLIENT_ID
+        - name: idam-secret
+          alias: IA_IDAM_SECRET
+        - name: s2s-secret
+          alias: IA_S2S_SECRET
+        - name: s2s-microservice
+          alias: IA_S2S_MICROSERVICE
+        - name: prof-ref-data-url
+          alias: PROF_REF_DATA_URL
+        - name: launch-darkly-sdk-key
+          alias: LAUNCH_DARKLY_SDK_KEY
+        - name: AppInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
