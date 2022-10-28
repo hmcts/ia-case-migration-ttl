@@ -191,3 +191,11 @@ Here are some other functionalities it provides:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
+## RUNNING THE APPLICATION LOCALLY
+
+ * It's dependent on an implementation of `ccd-case-migration-starter` so it need that repository locally built.
+ * Pull [ccd-case-migration-starter](https://github.com/hmcts/ccd-case-migration-starter) and switch to this branch: [ia-ccd-migration-ttl-asylum](https://github.com/hmcts/ccd-case-migration-starter/tree/feature/ia-ccd-migration-ttl-asylum)
+ * Using gradle on that branch, run `clean`, `build`, and `publishToMavenLocal` in order to have the repository in the local `.m2` folder
+ * On this repository, run `clean` and `build`
+ * To run the app from the IDE, just run the main method of the `Application.java` file
+ * The definitions from [this PR](https://github.com/hmcts/ia-ccd-definitions/pull/791) need to be uploaded for this to work (either from the branch of the PR or from the branch they'll be merged into after merging)
