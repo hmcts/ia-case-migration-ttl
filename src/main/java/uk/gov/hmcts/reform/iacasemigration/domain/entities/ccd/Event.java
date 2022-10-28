@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.iacasemigration.domain.entities.ccd;
 
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Arrays;
 
 public enum Event {
 
@@ -118,6 +119,8 @@ public enum Event {
     UPDATE_PAYMENT_STATUS("updatePaymentStatus"),
     MARK_ADDENDUM_EVIDENCE_AS_REVIEWED("markAddendumEvidenceAsReviewed"),
     MARK_PAYMENT_REQUEST_SENT("markPaymentRequestSent"),
+    MANAGE_CASE_TTL("manageCaseTTL"),
+    MIGRATE_CASE_TTL("migrateCaseTTL"),
 
     @JsonEnumDefaultValue
     UNKNOWN("unknown");
@@ -132,5 +135,12 @@ public enum Event {
     @Override
     public String toString() {
         return id;
+    }
+
+    public static Event fromValue(String value) {
+        return Arrays.stream(values())
+            .filter(event -> event.toString().equals(value))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Unknown event name: " + value));
     }
 }
