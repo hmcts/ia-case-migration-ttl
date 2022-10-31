@@ -2,18 +2,17 @@ package uk.gov.hmcts.reform.iacasemigration.migration;
 
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.Iterables;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
-import uk.gov.hmcts.reform.iacasemigration.domain.entities.AsylumCase;
-import uk.gov.hmcts.reform.ccd.client.CaseEventsApi;
 import uk.gov.hmcts.reform.iacasemigration.domain.entities.ccd.Event;
 import uk.gov.hmcts.reform.iacasemigration.domain.entities.ccd.TTL;
 import uk.gov.hmcts.reform.iacasemigration.domain.entities.ccd.field.YesOrNo;
@@ -25,20 +24,31 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 public class TimeToLiveMigration {
 
     private final CaseEventService caseEventService;
+    private static final String ASYLUM = "Asylum";
+    private static final String BAIL = "Bail";
     private static final int TWO_YEARS = 730;
-    private static final Set<Event> eventsThatTriggerTtlClock = Set.of(Event.SEND_DECISION_AND_REASONS,
-                                                                       Event.END_APPEAL,
-                                                                       Event.REMOVE_APPEAL_FROM_ONLINE);
+    private static final Set<Event> asylumEventsThatTriggerTtlClock = Set.of(Event.SEND_DECISION_AND_REASONS,
+                                                                             Event.END_APPEAL,
+                                                                             Event.REMOVE_APPEAL_FROM_ONLINE);
+
+    private static final Set<Event> bailEventsThatTriggerTtlClock = Set.of(Event.END_APPLICATION,
+                                                                             Event.RECORD_THE_DECISION);
 
     public TimeToLiveMigration(CaseEventService caseEventService) {
         this.caseEventService = caseEventService;
     }
 
-    public Optional<TTL> calculateTTL(User user, CaseDetails caseDetails) {
+    public Optional<TTL> calculateTTL(User user, CaseDetails caseDetails, String caseType) {
         String ccdCaseId = String.valueOf(caseDetails.getId());
-        List<CaseEventDetail> caseEventDetails = caseEventService.getEventDetailsForCase(ccdCaseId, user);
+        List<CaseEventDetail> caseEventDetails = caseEventService.getEventDetailsForCase(ccdCaseId, user, caseType);
 
         if (caseEventDetails.size() > 0) {
+            Set<Event> eventsThatTriggerTtlClock = StringUtils.equals(caseType, ASYLUM)
+                ? asylumEventsThatTriggerTtlClock
+                : StringUtils.equals(caseDetails.getCaseTypeId(), BAIL)
+                ? bailEventsThatTriggerTtlClock
+                : Collections.emptySet();
+
             caseEventDetails.sort(Comparator.comparing(CaseEventDetail::getCreatedDate).reversed());
             log.info("Case events {}", caseEventDetails);
             var lastEvent = Iterables.getLast(caseEventDetails);

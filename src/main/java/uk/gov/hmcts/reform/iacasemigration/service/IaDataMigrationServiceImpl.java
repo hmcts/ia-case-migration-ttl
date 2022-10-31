@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.iacasemigration.service;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.iacasemigration.domain.entities.ccd.TTL;
@@ -19,6 +19,8 @@ import uk.gov.hmcts.reform.migration.service.DataMigrationService;
 @RequiredArgsConstructor
 public class IaDataMigrationServiceImpl implements DataMigrationService<Map<String, Object>> {
 
+    @Value("${migration.caseType:}")
+    private String caseType;
     private static final String JURISDICTION = "IA";
     private final TimeToLiveMigration timeToLiveMigration;
 
@@ -32,8 +34,8 @@ public class IaDataMigrationServiceImpl implements DataMigrationService<Map<Stri
     }
 
     @Override
-    public Map<String, Object> migrate(User user, CaseDetails caseDetails) {
-        Optional<TTL> ttlOptional = timeToLiveMigration.calculateTTL(user, caseDetails);
+    public Map<String, Object> migrate(User user, CaseDetails caseDetails, String caseType) {
+        Optional<TTL> ttlOptional = timeToLiveMigration.calculateTTL(user, caseDetails, caseType);
 
         return ttlOptional.<Map<String, Object>>map(value -> Map.of("TTL", value))
             .orElse(Collections.emptyMap());

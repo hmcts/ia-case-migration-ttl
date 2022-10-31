@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.iacasemigration.service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseEventsApi;
@@ -13,7 +14,6 @@ import uk.gov.hmcts.reform.idam.client.models.User;
 @Service
 public class CaseEventService {
     public static final String JURISDICTION_ID = "IA";
-    public static final String CASE_TYPE_ID = "Asylum";
 
     private final CaseEventsApi caseEventsApi;
 
@@ -25,10 +25,10 @@ public class CaseEventService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    public List<Event> findEventsForCase(String ccdCaseId, User user) {
+    public List<Event> findEventsForCase(String ccdCaseId, User user, String caseType) {
         List<Event> caseEventList = new ArrayList<>();
 
-        List<CaseEventDetail> caseEventDetails = getEventDetailsForCase(ccdCaseId, user);
+        List<CaseEventDetail> caseEventDetails = getEventDetailsForCase(ccdCaseId, user, caseType);
 
         caseEventDetails.sort(Comparator.comparing(CaseEventDetail::getCreatedDate).reversed());
 
@@ -40,10 +40,10 @@ public class CaseEventService {
         return caseEventList;
     }
 
-    public List<CaseEventDetail> getEventDetailsForCase(String ccdCaseId, User user) {
+    public List<CaseEventDetail> getEventDetailsForCase(String ccdCaseId, User user, String caseType) {
         return caseEventsApi.findEventDetailsForCase(user.getAuthToken(),
                                                      authTokenGenerator.generate(), user.getUserDetails().getId(),
                                                      JURISDICTION_ID,
-                                                     CASE_TYPE_ID, ccdCaseId);
+                                                     caseType, ccdCaseId);
     }
 }
